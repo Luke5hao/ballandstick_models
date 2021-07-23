@@ -1,9 +1,14 @@
 from neuron import h 
 #from neuron.units import ms, mV  
-#import matplotlib.pyplot as plt 
-from bokeh.io import output_notebook
-import bokeh.plotting as plt
-output_notebook()
+import matplotlib.pyplot as plt 
+#from bokeh.io import output_notebook
+#import bokeh.plotting as plt
+#output_notebook()
+
+ms = 1
+mV = 1
+
+h.load_file('stdrun.hoc')
 
 class BallAndStick:
     def __init__(self, gid):
@@ -37,8 +42,29 @@ class BallAndStick:
         return 'BallAndStick[{}]'.format(self._gid)
 
 my_cell = BallAndStick(0)
+
+stim = h.IClamp(my_cell.dend(1))
+stim.delay = 5
+stim.dur = 1
+stim.amp = 0.1
+
 soma_v = h.Vector().record(my_cell.soma(0.5)._ref_v)
+dend_v = h.Vector().record(my_cell.dend(0.5)._ref_v)
 t = h.Vector().record(h._ref_t)
-f = plt.figure(x_axis_label='t (ms)', y_axis_label='v (mV)')
-f.line(t, soma_v, line_width=4)
-plt.show(f)
+
+h.finitialize(-65 * mV)
+h.continuerun(25 * ms)
+
+plt.plot(t, soma_v, label = 'soma(0.5)')
+
+amps = [0.075 * i for i in range(1, 5)]
+colors = ['green', 'blue', 'red', 'black']
+for amp, color in zip(amps, colors):
+    stim.amp = amp
+    for my_cell.dend.nseg, width in [(1, 2), (101, 1)]:
+        h.finitialize(-65)
+        h.continuerun(25)
+        plt.plot(t, list(soma_v), linewidth = width, color=color)
+        plt.plot(t, list(dend_v), linewidth = width, color=color, linestyle = 'dashed')
+plt.show()
+

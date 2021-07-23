@@ -1,11 +1,11 @@
 from neuron import h, gui
-#from neuron.units import ms, mV  
-#import matplotlib.pyplot as plt 
-from bokeh.io import output_notebook
-import bokeh.plotting as plt
-output_notebook()
+from neuron.units import ms, mV  
+import matplotlib.pyplot as plt 
+#from bokeh.io import output_notebook
+#import bokeh.plotting as plt
+#output_notebook()
 
-h.load_file('stdrun.hoc')
+h.load_file('stdrun.hoc') 
 
 class Cell:
     """ from first program with the addition of the cells position and rotation relative to origin"""
